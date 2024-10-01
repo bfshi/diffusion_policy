@@ -1,0 +1,76 @@
+name: bimanual_pick_image
+
+image_shape: &image_shape [3, 112, 112]
+shape_meta: &shape_meta
+  # acceptable types: rgb, low_dim
+  obs:
+    rgb_left:
+      shape: *image_shape
+      type: rgb
+    rgb_head:
+      shape: *image_shape
+      type: rgb
+    rgb_right:
+      shape: *image_shape
+      type: rgb
+    state:
+      shape: [24]
+      type: low_dim
+  action:
+    shape: [24]
+
+env_runner:
+  _target_: diffusion_policy.env_runner.pusht_image_runner.PushTImageRunner
+  n_train: 6
+  n_train_vis: 2
+  train_start_seed: 0
+  n_test: 50
+  n_test_vis: 4
+  legacy_test: True
+  test_start_seed: 100000
+  max_steps: 300
+  n_obs_steps: ${n_obs_steps}
+  n_action_steps: ${n_action_steps}
+  fps: 10
+  past_action: ${past_action_visible}
+  n_envs: null
+
+dataset:
+  _target_: diffusion_policy.dataset.bimanual_image_dataset.BimanualImageDataset
+  features: False
+  demo_root: /home/bfshi/data/bimanual
+  demo_dirs: ["pick-yellow-right_04-07-2024"]
+  inmem: True
+  start_ind: 0
+  num_demos: 120
+  num_steps: ${horizon}
+  num_pred: ${n_action_steps}
+  look_ahead: 0
+  im_size: 112
+  cams: ["left", "head", "right"]
+  noisy_skip: False
+  frame_skip: 1
+  default_pos_left_arm: [-4.065179173146383, -0.8556114000133057, 1.419995133076803, -3.108495374719137, -1.3419583479510706, 0,]
+  default_pos_right_arm:  [-2.198981587086813, -2.2018891773619593, -1.534730076789856, -0.1098826688579102, 1.2620022296905518, 0,]
+  joint_noise_mean: [ 0., 0., 0., 0., 0., 0.,
+                      0., 0., 0., 0., 0., 0.,
+                      0., 0., 0., 0., 0., 0.,
+                      0., 0., 0., 0., 0., 0. ]
+  joint_noise_std: [ 0.0213, 0.0246, 0.0211, 0.0378, 0.0382, 0.0255,
+                     0.0273, 0.0373, 0.0329, 0.0500, 0.0738, 0.0741,
+                     0.0202, 0.0198, 0.0211, 0.0417, 0.0396, 0.0308,
+                     0.0795, 0.0652, 0.0638, 0.0567, 0.0532, 0.0575 ]
+  joint_noise_std_scale: 1.0
+  feats_noise_std: 0.0
+  data_filter: {}
+  history_repeating: 0
+  img_sample_num: -1
+  use_touch: False
+  skip_failure: True
+#  zarr_path: data/pusht/pusht_cchi_v7_replay.zarr
+#  horizon: ${horizon}
+#  pad_before: ${eval:'${n_obs_steps}-1'}
+#  pad_after: ${eval:'${n_action_steps}-1'}
+#  seed: 42
+#  val_ratio: 0.02
+#  max_train_episodes: 90

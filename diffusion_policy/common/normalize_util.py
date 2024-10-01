@@ -35,6 +35,21 @@ def get_image_range_normalizer():
         input_stats_dict=stat
     )
 
+def get_bimanual_image_range_normalizer():
+    scale = np.array([2], dtype=np.float32)
+    offset = np.array([-1], dtype=np.float32)
+    stat = {
+        'min': np.array([-3], dtype=np.float32),
+        'max': np.array([3], dtype=np.float32),
+        'mean': np.array([0], dtype=np.float32),
+        'std': np.array([1], dtype=np.float32)
+    }
+    return SingleFieldLinearNormalizer.create_manual(
+        scale=scale,
+        offset=offset,
+        input_stats_dict=stat
+    )
+
 def get_identity_normalizer_from_stat(stat):
     scale = np.ones_like(stat['min'])
     offset = np.zeros_like(stat['min'])

@@ -5,6 +5,7 @@ outputs
 data
 data_local
 .vscode
+.idea
 _wandb
 
 **/.DS_Store
